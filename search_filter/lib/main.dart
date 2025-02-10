@@ -10,12 +10,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Search&Filter',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Search&Filter HomePage'),
     );
   }
 }
@@ -40,11 +40,11 @@ class _MyHomePageState extends State<MyHomePage> {
     {"id": 7, "name": "Aby", "age": 100},
     {"id": 8, "name": "Ayman", "age": 24},
     {"id": 9, "name": "Fattah", "age": 42},
-    {"id": 10, "name": "Bintang", "age": 50},
+    {"id": 10, "name": "Bintang", "age": 19},
     {"id": 11, "name": "Ardaw", "age": 64},
     {"id": 12, "name": "Glenn", "age": 72},
     {"id": 13, "name": "Hanzo", "age": 81},
-    {"id": 14, "name": "Nadila", "age": 92},
+    {"id": 14, "name": "Nadila", "age": 25},
     {"id": 15, "name": "Ayew", "age": 45},
     {"id": 16, "name": "Abizar", "age": 32},
     {"id": 17, "name": "Billie", "age": 98},
@@ -54,7 +54,14 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   List<Map<String, dynamic>> _foundUsers = [];
-  RangeValues _selectedAgeRange = const RangeValues(16, 100);
+  String? _selectedAgeGroup;
+  final List<String> _ageGroups = [
+    "All Ages",
+    "16-25",
+    "26-40",
+    "41-60",
+    "61+",
+  ];
 
   @override
   void initState() {
@@ -84,11 +91,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _applyFilters(List<Map<String, dynamic>> filteredUsers) {
     setState(() {
-      _foundUsers = filteredUsers
-          .where((user) =>
-              user["age"] >= _selectedAgeRange.start &&
-              user["age"] <= _selectedAgeRange.end)
-          .toList();
+      if (_selectedAgeGroup == "16-25") {
+        _foundUsers = filteredUsers
+            .where((user) => user["age"] >= 16 && user["age"] <= 25)
+            .toList();
+      } else if (_selectedAgeGroup == "26-40") {
+        _foundUsers = filteredUsers
+            .where((user) => user["age"] >= 26 && user["age"] <= 40)
+            .toList();
+      } else if (_selectedAgeGroup == "41-60") {
+        _foundUsers = filteredUsers
+            .where((user) => user["age"] >= 41 && user["age"] <= 60)
+            .toList();
+      } else if (_selectedAgeGroup == "61+") {
+        _foundUsers = filteredUsers.where((user) => user["age"] >= 61).toList();
+      } else {
+        _foundUsers = filteredUsers;
+      }
     });
   }
 
@@ -112,20 +131,19 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             const SizedBox(height: 20),
-            Text(
-                'Filter by Age Range: ${_selectedAgeRange.start.round()} - ${_selectedAgeRange.end.round()}'),
-            RangeSlider(
-              values: _selectedAgeRange,
-              min: 16,
-              max: 100,
-              divisions: 10,
-              labels: RangeLabels(
-                _selectedAgeRange.start.round().toString(),
-                _selectedAgeRange.end.round().toString(),
-              ),
-              onChanged: (RangeValues values) {
+            DropdownButton<String>(
+              value: _selectedAgeGroup,
+              hint: const Text("Filter by Age Group"),
+              isExpanded: true,
+              items: _ageGroups.map((String category) {
+                return DropdownMenuItem(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
                 setState(() {
-                  _selectedAgeRange = values;
+                  _selectedAgeGroup = newValue;
                   _applyFilters(_allUsers);
                 });
               },
