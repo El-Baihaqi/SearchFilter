@@ -40,10 +40,22 @@ class _MyHomePageState extends State<MyHomePage> {
     {"id": 7, "name": "Aby", "age": 100},
     {"id": 8, "name": "Ayman", "age": 24},
     {"id": 9, "name": "Fattah", "age": 42},
-    {"id": 10, "name": "Bintang", "age": 19},
+    {"id": 10, "name": "Bintang", "age": 50},
+    {"id": 11, "name": "Ardaw", "age": 64},
+    {"id": 12, "name": "Glenn", "age": 72},
+    {"id": 13, "name": "Hanzo", "age": 81},
+    {"id": 14, "name": "Nadila", "age": 92},
+    {"id": 15, "name": "Ayew", "age": 45},
+    {"id": 16, "name": "Abizar", "age": 32},
+    {"id": 17, "name": "Billie", "age": 98},
+    {"id": 18, "name": "Fader", "age": 34},
+    {"id": 19, "name": "Chevie", "age": 52},
+    {"id": 20, "name": "Leclerc", "age": 28},
   ];
 
   List<Map<String, dynamic>> _foundUsers = [];
+  RangeValues _selectedAgeRange = const RangeValues(16, 100);
+
   @override
   void initState() {
     _foundUsers = _allUsers;
@@ -67,9 +79,16 @@ class _MyHomePageState extends State<MyHomePage> {
             .toList();
       }
     }
+    _applyFilters(results);
+  }
 
+  void _applyFilters(List<Map<String, dynamic>> filteredUsers) {
     setState(() {
-      _foundUsers = results;
+      _foundUsers = filteredUsers
+          .where((user) =>
+              user["age"] >= _selectedAgeRange.start &&
+              user["age"] <= _selectedAgeRange.end)
+          .toList();
     });
   }
 
@@ -91,6 +110,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 labelText: 'Search by name or age',
                 suffixIcon: Icon(Icons.search),
               ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+                'Filter by Age Range: ${_selectedAgeRange.start.round()} - ${_selectedAgeRange.end.round()}'),
+            RangeSlider(
+              values: _selectedAgeRange,
+              min: 16,
+              max: 100,
+              divisions: 10,
+              labels: RangeLabels(
+                _selectedAgeRange.start.round().toString(),
+                _selectedAgeRange.end.round().toString(),
+              ),
+              onChanged: (RangeValues values) {
+                setState(() {
+                  _selectedAgeRange = values;
+                  _applyFilters(_allUsers);
+                });
+              },
             ),
             const SizedBox(height: 20),
             Expanded(
